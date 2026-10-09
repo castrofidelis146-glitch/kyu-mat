@@ -1,0 +1,16 @@
+@import "tailwindcss";
+@theme {
+  --font-sans: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  --color-brand: #15803d;
+  --color-brand-dark: #166534;
+  --color-brand-tint: #f0fdf4;
+  --color-ink: #14291c;
+}
+body { @apply bg-brand-tint text-ink font-sans antialiased; }
+:focus-visible { outline: 2px solid var(--color-brand); outline-offset: 2px; }
+
+html { scroll-behavior: smooth; scroll-padding-top: 7rem; -webkit-text-size-adjust: 100%; }
+body { overflow-x: hidden; }
+img, svg { max-width: 100%; }
+@media (max-width: 640px) { input, select, textarea { font-size: 16px; } } /* stops iOS zoom-on-focus */
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }

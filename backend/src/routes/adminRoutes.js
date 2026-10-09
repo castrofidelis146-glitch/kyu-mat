@@ -1,0 +1,11 @@
+import { Router } from 'express';
+import { requireAuth, requireAdmin } from '../middleware/auth.js';
+import * as c from '../controllers/adminController.js';
+const r = Router();
+r.use(requireAuth, requireAdmin);
+r.get('/analytics', c.analytics);
+r.get('/users', c.users);
+r.put('/users/:id/ban', c.ban);
+r.get('/listings', c.listings);
+r.delete('/listings/:id', c.removeListing);
+export default r;

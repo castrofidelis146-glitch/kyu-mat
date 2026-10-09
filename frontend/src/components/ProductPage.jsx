@@ -1,0 +1,52 @@
+import { useEffect, useState } from 'react';
+import { ArrowLeft, MessageCircle, Phone, ShieldCheck, LogIn } from 'lucide-react';
+import { api, timeAgo } from '../api.js';
+const wa = (n) => `https://wa.me/${n.replace(/\D/g, '').replace(/^0/, '254')}`;
+export default function ProductPage({ id, user, onAuth }) {
+  const [p, setP] = useState(null);
+  const [err, setErr] = useState('');
+  const [img, setImg] = useState(0);
+  useEffect(() => { setP(null); setErr(''); api.product(id).then(setP).catch((e) => setErr(e.message)); }, [id, user]);
+  if (err) return <p className="py-16 text-center">{err} <a href="#top" className="text-brand underline">Back to listings</a></p>;
+  if (!p) return <p className="py-16 text-center">Loading…</p>;
+  const sale = p.listing_type === 'FOR_SALE';
+  return (
+    <article className="py-8">
+      <a href="#listings" className="inline-flex items-center gap-1 text-sm font-semibold text-brand"><ArrowLeft className="size-4" />Back to listings</a>
+      <div className="mt-4 grid gap-8 md:grid-cols-2">
+        <div>
+          <div className="aspect-[4/3] overflow-hidden rounded-xl bg-brand/10">
+            {p.images[img] && <img src={p.images[img].image_url} alt={p.title} className="size-full object-cover" />}
+          </div>
+          {p.images.length > 1 && (
+            <div className="mt-2 flex gap-2">
+              {p.images.map((im, i) => (
+                <button key={i} onClick={() => setImg(i)} aria-label={`Photo ${i + 1}`} className={`size-16 overflow-hidden rounded-lg border-2 ${i === img ? 'border-brand' : 'border-transparent'}`}>
+                  <img src={im.image_url} alt="" className="size-full object-cover" /></button>
+              ))}
+            </div>
+          )}
+        </div>
+        <div className="space-y-3">
+          <span className={`inline-block rounded-md px-2 py-0.5 text-xs font-bold text-white ${sale ? 'bg-brand' : 'bg-amber-600'}`}>{sale ? 'For Sale' : 'For Exchange'}</span>
+          <h1 className="text-2xl font-extrabold text-brand-dark sm:text-3xl">{p.title}</h1>
+          <p className="text-2xl font-extrabold">{p.price != null ? `KSh ${Number(p.price).toLocaleString()}` : 'Open to swaps'}</p>
+          <p className="text-sm text-ink/70">{p.category} · {p.condition} · {p.location} · posted {timeAgo(p.created_at)}</p>
+          {p.description && <p className="whitespace-pre-line">{p.description}</p>}
+          <div className="rounded-xl border border-brand/15 bg-white p-4">
+            <p className="font-semibold">Seller: {p.seller_name}</p>
+            {p.seller_phone ? (
+              <div className="mt-3 flex flex-wrap gap-2">
+                <a href={wa(p.seller_phone)} target="_blank" rel="noreferrer" className="rounded-lg bg-brand px-4 py-2 font-semibold text-white hover:bg-brand-dark"><MessageCircle className="mr-2 inline size-4 align-text-bottom" />Chat on WhatsApp</a>
+                <a href={`tel:${p.seller_phone}`} className="rounded-lg border border-brand px-4 py-2 font-semibold text-brand"><Phone className="mr-2 inline size-4 align-text-bottom" />Call {p.seller_phone}</a>
+              </div>
+            ) : (
+              <button onClick={() => onAuth('login')} className="mt-3 rounded-lg bg-brand px-4 py-2 font-semibold text-white"><LogIn className="mr-2 inline size-4 align-text-bottom" />Log in to contact the seller</button>
+            )}
+            <p className="mt-3 flex items-start gap-1.5 text-xs text-ink/60"><ShieldCheck className="mt-0.5 size-4 shrink-0 text-brand" />Meet on campus in a public place and check the item before paying.</p>
+          </div>
+        </div>
+      </div>
+    </article>
+  );
+}
