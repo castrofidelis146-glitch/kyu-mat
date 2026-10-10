@@ -1,6 +1,7 @@
+const BASE = import.meta.env.VITE_API_URL || '';
 const token = () => localStorage.getItem('kyu_token');
 async function req(path, opts = {}) {
-  const res = await fetch(`/api${path}`, {
+  const res = await fetch(`${BASE}/api${path}`, {
     ...opts,
     headers: { 'Content-Type': 'application/json', ...(token() && { Authorization: `Bearer ${token()}` }) },
     body: opts.body && JSON.stringify(opts.body),
@@ -15,7 +16,7 @@ export const api = {
   upload: async (files) => {
     const fd = new FormData();
     files.forEach((f) => fd.append('images', f));
-    const res = await fetch('/api/uploads', { method: 'POST', headers: { Authorization: `Bearer ${token()}` }, body: fd });
+    const res = await fetch(`${BASE}/api/uploads`, { method: 'POST', headers: { Authorization: `Bearer ${token()}` }, body: fd });
     const d = await res.json();
     if (!res.ok) throw new Error(d.error || 'Upload failed');
     return d.urls;

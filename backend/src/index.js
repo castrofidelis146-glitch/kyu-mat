@@ -9,7 +9,7 @@ import uploadRoutes from './routes/uploadRoutes.js';
 import { UPLOAD_DIR } from './middleware/upload.js';
 import { notFound, errorHandler } from './middleware/error.js';
 const app = express();
-app.use(cors({ origin: process.env.CLIENT_ORIGIN }));
+app.use(cors({ origin: process.env.CLIENT_ORIGIN?.split(',').map((o) => o.trim()) }));
 app.use(express.json());
 app.use(metrics);
 app.get('/api/health', (_, res) => res.json({ ok: true }));
