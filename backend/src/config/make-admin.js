@@ -2,7 +2,7 @@ import 'dotenv/config';
 import bcrypt from 'bcryptjs';
 import { pool } from './db.js';
 import { normalizePhone } from '../utils/phone.js';
-const [email, password, phoneRaw, name = 'Admin'] = process.argv.slice(2);
+const [email = process.env.ADMIN_EMAIL, password = process.env.ADMIN_PASSWORD, phoneRaw = process.env.ADMIN_PHONE, name = process.env.ADMIN_NAME || 'Admin'] = process.argv.slice(2);
 const phone = normalizePhone(phoneRaw);
 if (!email || !password || !phone) { console.error('Usage: node src/config/make-admin.js EMAIL PASSWORD PHONE [NAME]'); process.exit(1); }
 const hash = await bcrypt.hash(password, 10);
