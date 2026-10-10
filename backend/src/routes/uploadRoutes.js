@@ -1,12 +1,13 @@
 import { Router } from 'express';
-import { v2 as cloudinary } from 'cloudinary';
 import { writeFile } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
 import { join } from 'node:path';
 import { requireAuth } from '../middleware/auth.js';
 import { upload, UPLOAD_DIR, EXT } from '../middleware/upload.js';
 
-const useCloud = !!process.env.CLOUDINARY_URL;
+const useCloud = /^cloudinary:\/\//.test(process.env.CLOUDINARY_URL || '');
+const cloudinary = useCloud ? (await import('cloudinary')).v2 : null;
+if (!useCloud) console.warn('CLOUDINARY_URL missing or invalid: saving photos to local disk (they will be lost on redeploy).');
 const toCloud = (buf) => new Promise((ok, fail) =>
   cloudinary.uploader.upload_stream({ folder: 'kyu-mart', resource_type: 'image' }, (e, r) => (e ? fail(e) : ok(r.secure_url))).end(buf));
 const toDisk = async (f) => {
