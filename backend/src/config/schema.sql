@@ -78,3 +78,14 @@ CREATE TABLE IF NOT EXISTS seller_ratings (
   CHECK (seller_id <> rater_id)
 );
 CREATE INDEX IF NOT EXISTS idx_ratings_seller ON seller_ratings(seller_id);
+
+CREATE TABLE IF NOT EXISTS site_visits (
+  viewer_key TEXT NOT NULL,
+  hour_start TIMESTAMPTZ NOT NULL,
+  PRIMARY KEY (viewer_key, hour_start)
+);
+CREATE INDEX IF NOT EXISTS idx_site_visits_hour ON site_visits(hour_start);
+CREATE TABLE IF NOT EXISTS site_online (
+  viewer_key TEXT PRIMARY KEY,
+  last_seen TIMESTAMPTZ NOT NULL DEFAULT now()
+);
