@@ -3,6 +3,7 @@ import { Eye, Users, Heart, Star, CircleCheck } from 'lucide-react';
 import { api, timeAgo } from '../api.js';
 import BarChart from './BarChart.jsx';
 import Stars from './Stars.jsx';
+import LiveStats from './LiveStats.jsx';
 
 const Stat = ({ icon: Icon, label, value, sub }) => (
   <div className="rounded-xl border border-brand/15 bg-white p-4">
@@ -30,6 +31,13 @@ export default function SellerDashboard() {
   }, []);
 
   if (!d) return <p className="py-16 text-center">{err || 'Loading your dashboard…'}</p>;
+  if (d.ads.length === 0) return (
+    <section className="mx-auto max-w-md py-16 text-center">
+      <h1 className="text-2xl font-extrabold text-brand-dark">Seller dashboard</h1>
+      <p className="my-3">Your dashboard unlocks when you post your first ad. You will then see your views, visitors, ratings and marketplace activity here.</p>
+      <a href="#top" className="inline-block rounded-lg bg-brand px-5 py-2 font-semibold text-white hover:bg-brand-dark">Back to the home page</a>
+    </section>
+  );
   const t = d.totals;
   return (
     <section className="space-y-4 py-8">
@@ -74,6 +82,7 @@ export default function SellerDashboard() {
           ))}</ul>
         )}
       </div>
+      <LiveStats />
       <p className="text-xs text-ink/60">A view is counted once per person per ad per day. Your own views and search-engine bots are not counted.</p>
     </section>
   );

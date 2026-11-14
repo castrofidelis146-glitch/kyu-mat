@@ -9,7 +9,6 @@ import ProductGrid from './components/ProductGrid.jsx';
 import PostAdForm from './components/PostAdForm.jsx';
 import ProductPage from './components/ProductPage.jsx';
 import ChatPage from './components/ChatPage.jsx';
-import LiveStats from './components/LiveStats.jsx';
 import SellerDashboard from './components/SellerDashboard.jsx';
 import SellerPage from './components/SellerPage.jsx';
 import MyAccount from './components/MyAccount.jsx';
@@ -90,7 +89,6 @@ export default function App() {
             {!user && <LoginBox mode={mode} setMode={setMode} onDone={setUser} />}
           </Hero>
           <CategoryGrid categories={categories} active={filters.category} onSelect={set('category')} />
-          <LiveStats />
           <ProductGrid favs={favs} onFav={toggleFav} products={products} loading={loading} type={filters.type} setType={set('type')} sort={filters.sort} setSort={set('sort')} />
           <section className="grid gap-4 py-6 md:grid-cols-3">
             {values.map(([Icon, t, d]) => <div key={t} className="rounded-xl bg-white p-5 border border-brand/15"><span className="mb-3 grid size-10 place-items-center rounded-lg bg-brand/10 text-brand"><Icon className="size-5" /></span><h3 className="font-bold text-brand-dark">{t}</h3><p className="text-sm text-ink/70">{d}</p></div>)}

@@ -14,7 +14,7 @@ export default function MyAccount({ favList, favs, onFav, onChanged }) {
   const del = (a) => confirm(`Delete "${a.title}"? This cannot be undone.`) && act(() => api.deleteProduct(a.id));
   return (
     <section className="py-8">
-      <p className="mb-3 text-sm"><a href="#/dashboard" className="font-semibold text-brand underline">Seller dashboard: visitors, live charts and ratings</a></p>
+      {ads && ads.length > 0 && <p className="mb-3 text-sm"><a href="#/dashboard" className="font-semibold text-brand underline">Seller dashboard: visitors, live charts and ratings</a></p>}
       <div className="mb-5 flex gap-2" role="tablist">
         {[['ads', `My Ads${ads ? ` (${ads.length})` : ''}`], ['saved', `Saved (${favList.length})`]].map(([k, l]) => (
           <button key={k} role="tab" aria-selected={tab === k} onClick={() => setTab(k)}

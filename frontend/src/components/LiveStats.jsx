@@ -22,7 +22,7 @@ export default function LiveStats() {
       if (document.visibilityState === 'hidden') return;
       api.publicStats().then((x) => { if (!stop) { setD(x); setAt(new Date()); } }).catch(() => {});
     };
-    api.ping().catch(() => {}).finally(load); // count this visitor first, then read the numbers
+    load();
     const t = setInterval(load, 10000);
     document.addEventListener('visibilitychange', load);
     return () => { stop = true; clearInterval(t); document.removeEventListener('visibilitychange', load); };
@@ -34,7 +34,7 @@ export default function LiveStats() {
   return (
     <section aria-label="Live statistics" className="space-y-4 py-6">
       <div className="flex flex-wrap items-center gap-3">
-        <h2 className="flex items-center gap-2 text-2xl font-extrabold text-brand-dark"><Activity className="size-6" />Live on KYU Mart</h2>
+        <h2 className="flex items-center gap-2 text-2xl font-extrabold text-brand-dark"><Activity className="size-6" />Marketplace activity</h2>
         <span className="inline-flex items-center gap-1.5 rounded-full bg-brand/10 px-3 py-1 text-xs font-semibold text-brand-dark">
           <span className="size-2 animate-pulse rounded-full bg-brand" />Live · updated {at?.toLocaleTimeString()}
         </span>
@@ -60,7 +60,7 @@ export default function LiveStats() {
           ))}
         </ul>
       </div>
-      <p className="text-xs text-ink/60">Visitors are counted anonymously, once per person per hour. Numbers refresh automatically.</p>
+      <p className="text-xs text-ink/60">Visitors are counted anonymously, once per person per hour. Numbers refresh automatically. Only sellers can see this section.</p>
     </section>
   );
 }
