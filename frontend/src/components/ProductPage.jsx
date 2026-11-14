@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ArrowLeft, MessageCircle, Phone, ShieldCheck, LogIn } from 'lucide-react';
 import { api, timeAgo } from '../api.js';
+import Stars from './Stars.jsx';
 const wa = (n) => `https://wa.me/${n.replace(/\D/g, '').replace(/^0/, '254')}`;
 export default function ProductPage({ id, user, onAuth }) {
   const [p, setP] = useState(null);
@@ -34,7 +35,7 @@ export default function ProductPage({ id, user, onAuth }) {
           <p className="text-sm text-ink/70">{p.category} · {p.condition} · {p.location} · posted {timeAgo(p.created_at)}</p>
           {p.description && <p className="whitespace-pre-line">{p.description}</p>}
           <div className="rounded-xl border border-brand/15 bg-white p-4">
-            <p className="font-semibold">Seller: {p.seller_name}</p>
+            <p className="flex flex-wrap items-center gap-2 font-semibold">Seller: <a href={`#/seller/${p.seller_id}`} className="text-brand underline">{p.seller_name}</a>{p.seller_rating_count > 0 ? <Stars value={p.seller_rating} count={p.seller_rating_count} /> : <span className="text-sm font-normal text-ink/60">No ratings yet</span>}</p>
             {p.seller_phone ? (
               <div className="mt-3 flex flex-wrap gap-2">
                 <a href={wa(p.seller_phone)} target="_blank" rel="noreferrer" className="rounded-lg bg-brand px-4 py-2 font-semibold text-white hover:bg-brand-dark"><MessageCircle className="mr-2 inline size-4 align-text-bottom" />Chat on WhatsApp</a>

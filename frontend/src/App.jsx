@@ -8,6 +8,8 @@ import CategoryGrid from './components/CategoryGrid.jsx';
 import ProductGrid from './components/ProductGrid.jsx';
 import PostAdForm from './components/PostAdForm.jsx';
 import ProductPage from './components/ProductPage.jsx';
+import SellerDashboard from './components/SellerDashboard.jsx';
+import SellerPage from './components/SellerPage.jsx';
 import MyAccount from './components/MyAccount.jsx';
 import AdminPanel from './components/AdminPanel.jsx';
 
@@ -29,12 +31,14 @@ export default function App() {
   useEffect(() => { loadFavs(); }, [user]);
   const set = (k) => (v) => setFilters((f) => ({ ...f, [k]: v }));
   const productId = route.startsWith('#/product/') ? route.slice(10) : null;
+  const sellerId = route.startsWith('#/seller/') ? route.slice(9) : null;
+  const dashboard = route === '#/dashboard' && !!user;
   const account = route === '#/account' && !!user;
   const admin = route === '#/admin' && !!user?.is_admin;
 
   const openAuth = (m) => {
     setMode(m);
-    if (productId || account || admin) location.hash = '#top';
+    if (sellerId || dashboard || productId || account || admin) location.hash = '#top';
     setTimeout(() => document.getElementById('auth')?.scrollIntoView({ behavior: 'smooth' }), 50);
   };
   const toggleFav = async (id) => {
@@ -42,7 +46,7 @@ export default function App() {
     try { favs.has(id) ? await api.removeFav(id) : await api.addFav(id); loadFavs(); } catch {}
   };
   const openPost = () => (user ? setPostOpen(true) : openAuth('register'));
-  const pick = (k) => (v) => { set(k)(v); if (productId || account || admin) location.hash = '#listings'; };
+  const pick = (k) => (v) => { set(k)(v); if (sellerId || dashboard || productId || account || admin) location.hash = '#listings'; };
 
   useEffect(() => { const h = () => setRoute(location.hash); addEventListener('hashchange', h); return () => removeEventListener('hashchange', h); }, []);
   useEffect(() => { api.categories().then(setCategories).catch(() => {}); }, []);
@@ -56,7 +60,9 @@ export default function App() {
       <Navbar categories={categories} user={user} onSearch={pick('q')} onCategory={pick('category')} onAuth={openAuth} onPost={openPost}
         onLogout={() => { session.clear(); setUser(null); }} />
       <main className="mx-auto max-w-7xl px-3 sm:px-4">
-        {admin ? <AdminPanel />
+        {sellerId ? <SellerPage id={sellerId} user={user} favs={favs} onFav={toggleFav} onAuth={openAuth} />
+          : dashboard ? <SellerDashboard />
+          : admin ? <AdminPanel />
           : account ? <MyAccount favList={favList} favs={favs} onFav={toggleFav} onChanged={() => { setTick((t) => t + 1); loadFavs(); }} />
           : productId ? <ProductPage id={productId} user={user} onAuth={openAuth} /> : <>
           <Hero onPost={openPost}>

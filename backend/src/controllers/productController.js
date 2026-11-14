@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import * as P from '../models/productModel.js';
+import { recordView } from '../utils/analytics.js';
 const wrap = (fn) => async (req, res, next) => { try { await fn(req, res); } catch (e) { next(e); } };
 const guardOwner = async (req, res) => {
   const o = await P.owner(req.params.id);
@@ -13,6 +14,7 @@ export const get = wrap(async (req, res) => {
   let authed = false;
   try { jwt.verify((req.headers.authorization || '').replace(/^Bearer /, ''), process.env.JWT_SECRET); authed = true; } catch {}
   const p = await P.getById(req.params.id, authed);
+  if (p) recordView(req, p);
   p ? res.json(p) : res.status(404).json({ error: 'Listing not found.' });
 });
 export const create = wrap(async (req, res) => res.status(201).json(await P.getById(await P.create(req.user.id, req.body))));

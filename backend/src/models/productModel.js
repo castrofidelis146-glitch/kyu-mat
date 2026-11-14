@@ -3,14 +3,18 @@ const SELECT = `
 SELECT p.id, p.title, p.description, p.price, p.listing_type, p.condition, p.location, p.status, p.created_at,
   c.name AS category, c.slug AS category_slug,
   u.id AS seller_id, u.full_name AS seller_name, u.profile_image_url AS seller_avatar,
+  (SELECT ROUND(AVG(rating), 1)::float FROM seller_ratings sr WHERE sr.seller_id = u.id) AS seller_rating,
+  (SELECT COUNT(*)::int FROM seller_ratings sr WHERE sr.seller_id = u.id) AS seller_rating_count,
+  (SELECT COUNT(*)::int FROM product_views pv WHERE pv.product_id = p.id) AS views,
   (SELECT image_url FROM product_images i WHERE i.product_id=p.id ORDER BY is_primary DESC, id LIMIT 1) AS image_url
 FROM products p JOIN categories c ON c.id=p.category_id JOIN users u ON u.id=p.user_id`;
 const SORTS = { newest: 'p.created_at DESC', price_asc: 'p.price ASC NULLS LAST', price_desc: 'p.price DESC NULLS LAST' };
 
-export const list = async ({ category, type, q, sort = 'newest', limit = 24, offset = 0 }) => {
+export const list = async ({ category, type, q, seller, sort = 'newest', limit = 24, offset = 0 }) => {
   const where = ["p.status='AVAILABLE'"], params = [];
   if (category) { params.push(category); where.push(`c.slug=$${params.length}`); }
   if (type) { params.push(type); where.push(`p.listing_type=$${params.length}`); }
+  if (seller) { params.push(seller); where.push(`p.user_id=$${params.length}`); }
   if (q) { params.push(`%${q}%`); where.push(`(p.title ILIKE $${params.length} OR p.description ILIKE $${params.length})`); }
   params.push(Math.min(+limit || 24, 100), +offset || 0);
   return (await query(`${SELECT} WHERE ${where.join(' AND ')} ORDER BY ${SORTS[sort] || SORTS.newest}

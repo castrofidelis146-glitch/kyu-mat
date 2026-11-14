@@ -14,6 +14,7 @@ export default function MyAccount({ favList, favs, onFav, onChanged }) {
   const del = (a) => confirm(`Delete "${a.title}"? This cannot be undone.`) && act(() => api.deleteProduct(a.id));
   return (
     <section className="py-8">
+      <p className="mb-3 text-sm"><a href="#/dashboard" className="font-semibold text-brand underline">Seller dashboard: visitors, live charts and ratings</a></p>
       <div className="mb-5 flex gap-2" role="tablist">
         {[['ads', `My Ads${ads ? ` (${ads.length})` : ''}`], ['saved', `Saved (${favList.length})`]].map(([k, l]) => (
           <button key={k} role="tab" aria-selected={tab === k} onClick={() => setTab(k)}
@@ -29,7 +30,7 @@ export default function MyAccount({ favList, favs, onFav, onChanged }) {
                 <div className="size-16 shrink-0 overflow-hidden rounded-lg bg-brand/10">{a.image_url && <img src={a.image_url} alt="" className="size-full object-cover" />}</div>
                 <div className="min-w-40 flex-1">
                   <a href={`#/product/${a.id}`} className="font-bold hover:text-brand">{a.title}</a>
-                  <p className="text-sm text-ink/70">{a.price != null ? `KSh ${Number(a.price).toLocaleString()}` : 'Open to swaps'}</p>
+                  <p className="text-sm text-ink/70">{a.price != null ? `KSh ${Number(a.price).toLocaleString()}` : 'Open to swaps'} · {a.views ?? 0} views</p>
                 </div>
                 <span className={`rounded-md px-2 py-0.5 text-xs font-bold ${a.status === 'SOLD' ? 'bg-ink/10 text-ink/70' : 'bg-brand/10 text-brand-dark'}`}>{a.status === 'SOLD' ? 'Sold' : 'Available'}</span>
                 <button onClick={() => toggleSold(a)} className={`${btn} border-brand text-brand hover:bg-brand hover:text-white`}><CircleCheck className="mr-1 inline size-4 align-text-bottom" />{a.status === 'SOLD' ? 'Mark available' : 'Mark as sold'}</button>
