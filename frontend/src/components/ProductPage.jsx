@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ArrowLeft, MessageCircle, Phone, ShieldCheck, LogIn } from 'lucide-react';
+import { ArrowLeft, MessageCircle, Phone, ShieldCheck, LogIn, MessageSquare } from 'lucide-react';
 import { api, timeAgo } from '../api.js';
 import Stars from './Stars.jsx';
 import RateSeller from './RateSeller.jsx';
@@ -10,6 +10,12 @@ export default function ProductPage({ id, user, onAuth }) {
   const [p, setP] = useState(null);
   const [err, setErr] = useState('');
   const [img, setImg] = useState(0);
+  const [cbusy, setCbusy] = useState(false);
+  async function startChat() {
+    setCbusy(true);
+    try { const r = await api.chatStart(id); location.hash = `#/chat/${r.id}`; }
+    catch (e) { alert(e.message); } finally { setCbusy(false); }
+  }
   useEffect(() => { setP(null); setErr(''); setImg(0); api.product(id).then(setP).catch((e) => setErr(e.message)); }, [id, user]);
 
   if (err) return <p className="py-16 text-center">{err} <a href="#top" className="text-brand underline">Back to listings</a></p>;
@@ -59,6 +65,7 @@ export default function ProductPage({ id, user, onAuth }) {
               <>
                 <p className="mt-3 text-sm font-semibold">Chat with {first}</p>
                 <div className="mt-2 flex flex-wrap gap-2">
+                  <button onClick={startChat} disabled={cbusy} className="inline-flex items-center gap-2 rounded-lg bg-brand px-4 py-2 font-semibold text-white hover:bg-brand-dark disabled:opacity-60"><MessageSquare className="size-4" />Chat with {first} on KYU Mart</button>
                   <a href={chat} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-lg bg-brand px-4 py-2 font-semibold text-white hover:bg-brand-dark"><MessageCircle className="size-4" />Chat on WhatsApp</a>
                   <a href={`tel:${p.seller_phone}`} className="inline-flex items-center gap-2 rounded-lg border border-brand px-4 py-2 font-semibold text-brand"><Phone className="size-4" />Call {p.seller_phone}</a>
                 </div>

@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { House, Store, CirclePlus, LayoutGrid, ChevronDown, Search, LogIn, UserPlus, CircleUser, ShieldCheck, LogOut, Menu, X } from 'lucide-react';
 import Logo from './Logo.jsx';
+import { MessageSquare } from 'lucide-react';
 
-export default function Navbar({ categories, user, onSearch, onCategory, onLogout, onAuth, onPost }) {
+export default function Navbar({ categories, user, onSearch, onCategory, onLogout, onAuth, onPost, unread = 0 }) {
   const [q, setQ] = useState('');
   const [menu, setMenu] = useState(false);
   const [cats, setCats] = useState(false);
@@ -53,6 +54,7 @@ export default function Navbar({ categories, user, onSearch, onCategory, onLogou
 
           <div className="hidden items-center gap-3 text-sm font-semibold xl:flex">
             {user ? <>
+              <a href="#/chat" className="flex items-center gap-1.5 hover:text-brand"><MessageSquare className="size-4" />Messages{unread > 0 && <span className="rounded-full bg-red-600 px-1.5 text-xs text-white">{unread}</span>}</a>
               <a href="#/account" className="flex items-center gap-1.5 hover:text-brand"><CircleUser className="size-4" />{user.full_name.split(' ')[0]} · My Ads</a>
               {user.is_admin && <a href="#/admin" className="flex items-center gap-1 text-brand"><ShieldCheck className="size-4" />Admin</a>}
               <button onClick={onLogout} className="flex items-center gap-1 text-brand"><LogOut className="size-4" />Log out</button>
@@ -83,6 +85,7 @@ export default function Navbar({ categories, user, onSearch, onCategory, onLogou
             )}
             <hr className="my-2 border-brand/10" />
             {user ? <>
+              <a href="#/chat" onClick={() => setMenu(false)} className={m}><MessageSquare className="size-5 text-brand" />Messages{unread > 0 && <span className="ml-auto rounded-full bg-red-600 px-2 text-xs font-bold text-white">{unread}</span>}</a>
               <a href="#/account" onClick={() => setMenu(false)} className={m}><CircleUser className="size-5 text-brand" />{user.full_name.split(' ')[0]} · My Ads</a>
               {user.is_admin && <a href="#/admin" onClick={() => setMenu(false)} className={m}><ShieldCheck className="size-5 text-brand" />Admin</a>}
               <button onClick={go(onLogout)} className={m}><LogOut className="size-5 text-brand" />Log out</button>

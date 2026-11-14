@@ -1,0 +1,11 @@
+import { Router } from 'express';
+import { requireAuth } from '../middleware/auth.js';
+import { list, start, messages, send, unread } from '../controllers/chatController.js';
+const r = Router();
+r.use(requireAuth);
+r.get('/unread', unread);
+r.get('/conversations', list);
+r.post('/conversations', start);
+r.get('/conversations/:id/messages', messages);
+r.post('/conversations/:id/messages', send);
+export default r;

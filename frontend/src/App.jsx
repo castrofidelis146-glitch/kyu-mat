@@ -8,6 +8,7 @@ import CategoryGrid from './components/CategoryGrid.jsx';
 import ProductGrid from './components/ProductGrid.jsx';
 import PostAdForm from './components/PostAdForm.jsx';
 import ProductPage from './components/ProductPage.jsx';
+import ChatPage from './components/ChatPage.jsx';
 import LiveStats from './components/LiveStats.jsx';
 import SellerDashboard from './components/SellerDashboard.jsx';
 import SellerPage from './components/SellerPage.jsx';
@@ -32,6 +33,9 @@ export default function App() {
   useEffect(() => { loadFavs(); }, [user]);
   const set = (k) => (v) => setFilters((f) => ({ ...f, [k]: v }));
   const productId = route.startsWith('#/product/') ? route.slice(10) : null;
+  const inChat = !!user && (route === '#/chat' || route.startsWith('#/chat/'));
+  const chatId = inChat ? route.slice(7) : '';
+  const [unread, setUnread] = useState(0);
   const sellerId = route.startsWith('#/seller/') ? route.slice(9) : null;
   const dashboard = route === '#/dashboard' && !!user;
   const account = route === '#/account' && !!user;
@@ -51,6 +55,13 @@ export default function App() {
 
   useEffect(() => { const h = () => setRoute(location.hash); addEventListener('hashchange', h); return () => removeEventListener('hashchange', h); }, []);
   useEffect(() => { api.categories().then(setCategories).catch(() => {}); }, []);
+  useEffect(() => {
+    if (!user) { setUnread(0); return; }
+    const load = () => { if (document.visibilityState === 'visible') api.chatUnread().then((r) => setUnread(r.unread)).catch(() => {}); };
+    load();
+    const t = setInterval(load, 15000);
+    return () => clearInterval(t);
+  }, [user, route]);
   // heartbeat: tells the server this visitor is still here (every 30 s while the tab is visible)
   useEffect(() => {
     const ping = () => { if (document.visibilityState === 'visible') api.ping().catch(() => {}); };
@@ -66,13 +77,14 @@ export default function App() {
 
   return (
     <div id="top">
-      <Navbar categories={categories} user={user} onSearch={pick('q')} onCategory={pick('category')} onAuth={openAuth} onPost={openPost}
+      <Navbar unread={unread} categories={categories} user={user} onSearch={pick('q')} onCategory={pick('category')} onAuth={openAuth} onPost={openPost}
         onLogout={() => { session.clear(); setUser(null); }} />
       <main className="mx-auto max-w-7xl px-3 sm:px-4">
         {sellerId ? <SellerPage id={sellerId} user={user} favs={favs} onFav={toggleFav} onAuth={openAuth} />
           : dashboard ? <SellerDashboard />
           : admin ? <AdminPanel />
           : account ? <MyAccount favList={favList} favs={favs} onFav={toggleFav} onChanged={() => { setTick((t) => t + 1); loadFavs(); }} />
+          : inChat ? <ChatPage id={chatId} user={user} />
           : productId ? <ProductPage id={productId} user={user} onAuth={openAuth} /> : <>
           <Hero onPost={openPost}>
             {!user && <LoginBox mode={mode} setMode={setMode} onDone={setUser} />}
